@@ -2,6 +2,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Scanner;
 
 public class Main {
 
@@ -13,8 +14,12 @@ public class Main {
         // Either way, we need to set the latitude and longitude variables below:
 
         // Example latitude and longitude for MiraCosta College
+
+
         String latitude = "33.1902";
         String longitude = "-117.3021";
+        System.out.println("STEP 1:\n Latitude: " + latitude + "\nLongitude: " + longitude + "\n\n");
+
 
         // ------------------------------------------------------------------------------
 
@@ -23,6 +28,9 @@ public class Main {
         // or use Postman to test the API before programming!
         // You need to parse out the "forecast" element from the response - this is the URL you need to call in Step 3.
         // NOTE: This step has been done for you, please use it as a reference for completing the additional steps
+
+        System.out.println("STEP 2:\n");
+
         String requestURL = "https://api.weather.gov/points/" + latitude + "," + longitude;
         HttpResponse<String> response = invokeGET(requestURL);
 
@@ -35,6 +43,7 @@ public class Main {
             if(lines[i].contains("\"forecast\":"))
             {
                 forecastURL = getJSONValueFromLine(lines[i]);
+
                 System.out.println(lines[i]);
             }
         }
@@ -44,7 +53,23 @@ public class Main {
         // Step 3 - Call the National Weather Service API for getting the forecast
         // Using the API URL you got from Step 2, get the forecast, and locate and parse out the current temperature
 
+
         // TO-DO: Implement step 3
+
+
+        System.out.println("\n\nSTEP 3\n");
+        response = invokeGET(forecastURL);
+        body = response.body();
+        lines = splitLines(body);
+
+        for(int i = 0; i < lines.length; i++)
+        {
+            if(lines[i].contains("\"temperature\":"))
+            {
+                System.out.println(lines[i]);
+                break;
+            }
+        }
 
         // ------------------------------------------------------------------------------
 
@@ -56,9 +81,35 @@ public class Main {
         // 60 to 74: Might want to grab a sweatshirt
         // 59 and below: Time for snow pants!  Or just stay inside and drink hot chocolate...
 
+
         // If you have a different tolerance level of certain temperatures, please feel free to create your own recommendations =)
 
         // TO-DO: Implement step 4
+
+
+        System.out.println("\n\nSTEP 4\n");
+
+        // Store temperature as an int
+        int temperature = 0;
+
+        for(int i = 0; i < lines.length; i++)
+        {
+            if( lines[i].contains("\"temperature\":") )
+            {
+                System.out.println(lines[i]);
+
+                // Parse temperature from the line
+                temperature = Integer.parseInt(lines[i].substring(lines[i].indexOf(':')+2, lines[i].length()-1));
+                System.out.println(temperature);
+                break;
+            }
+        }
+
+        // Print appropriate message
+        if (temperature > 77) System.out.println("Classic San Diego weather! T shirt & shorts for a beach day is in order!");
+        else if (temperature > 60) System.out.println("Might need a nice cardigan or flannel -- just 1 layer should do!");
+        else System.out.println("The weather outside is frightful... but hot cocoa from BevMobil sounds so delightful!\n Wear your snow pants!");
+
 
     }
 
